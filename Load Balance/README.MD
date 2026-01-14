@@ -7,7 +7,7 @@ Além disso, haverá uma VM cliente responsável pelos testes de acesso e valida
 
 -Estrutura do Laboratório
 
-Máquinas Virtuais Utilizadas:
+Máquinas Virtuais Utilizadas: 
 
 Descrição:
 
