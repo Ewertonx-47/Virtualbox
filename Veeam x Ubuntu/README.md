@@ -14,7 +14,7 @@ Primeiro, é necessário criar uma pasta compartilhada entre o host e o Ubuntu. 
 
 clicar na VM > Configurações > Pasta compartilhada
 
-![PASTA](../Assets/Utilitarios/selecionar_pasta.png)
+![PASTA](../Assets/virtualbox/selecionar_pasta.png)
 
 Depois de mapear a pasta, é preciso instalar um pacote de software que faz a ponte entre a VM e o host, para que a VM consiga enxergar a pasta compartilhada. Esse pacote é o Guest Additions. A ISO do Guest Additions já é inserida no drive virtual de DVD/CD da VM no momento da instalação do sistema operacional. O Linux enxerga todos os dispositivos como arquivos, e o drive onde está o Guest Additions é o arquivo /dev/cdrom.
 
