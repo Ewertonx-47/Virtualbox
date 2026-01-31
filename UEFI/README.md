@@ -51,7 +51,47 @@ No path /boot/efi/EFI/ubuntu temos os arquivos .efi:
 -grubx64.efi 
 -shimx64.efi 
 
-Esses são os executaveis que a UEFI procura para executar. Primeiro o UEFI executa shimx64.efi que é um arquivo de segurança para validar se o proximo executável de fato é o grubx64.efi. Nada mais que uma camada de segurança.
+Esses são os executaveis que a UEFI procura para executar. Primeiro o UEFI executa shimx64.efi que é um arquivo de segurança para validar se o próximo executável de fato é o grubx64.efi. Nada mais que uma camada de segurança.
 
+Mas sobre o kernel? Porque o firmware faz o caminho de /boot, mas não carrega o kernel?
+
+O firmware UEFI é simples. Ele consegue ler a partição formatada em FAT32 e executar o arquivo.efi, mas ele não sabe que o seu Ubuntu está em uma partição ext4 logo ao lado. Após o grubx64.efi ser carregado na memória RAM, ele não sabe onde está os arquivos configuração, pois o grubx64.efi é a código base do GRUB mais um arquivo de configuração temporário chamado Early Config. A partir daí, o executável consegue localizar os arquivos de configuração em /boot e chama o GRUB que nos mostra o menu de entrada.
+
+Agora, vamos criar uma nova entrada que ficará armazenda na NVRAM para que o firmware possa seguir uma nova ordem, se necessário ou só ter um outro caminho a seguir caso o primeiro de errado. 
+
+Já vimos no comando "efibootmgr" a saída que está sendo utilizada. 
+
+Criando uma nova entrada UEFI, sem substituir a atual.
+
+* sudo efibootmgr -c \ - Create
+* -d /dev/sda \ - Disco
+* -p 1 \ - Partição ESP
+* -L "Linux-LAB" \ - Nome visível
+* -l '\EFI\ubuntu\grubx64.efi' - Caminho EFI
+* efibootmgr - Conferir a nova entrada
+
+(imagem)
+
+Após o reboot, o Linux já registrou um comportamente diferente na entrada do firmware. 
+
+(imagem)
+
+Anteriormente o BootCurrent era o 0003, com o reboot da máquina passou a ser o 0002 (recém criada).
+
+Testando outro tipo de entrada forçadamente.
+
+sudo efibootmgr -o 0003,0002,0001,0000
+
+(imagem)
+
+Antes do reboot já é possível perceber a mudança no BootOrder. 
+
+(imagem)
+
+Após o reboot, a entrada passou a ser 0003 primeiro.
+
+(imagem)
+
+ 
 
 
