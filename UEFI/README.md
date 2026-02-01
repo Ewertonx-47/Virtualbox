@@ -2,7 +2,7 @@ Laboratório: Análise de Entradas de Firmware UEFI no Linux
 
 
 
-Este laboratório descreve o processo de análise das variáveis de inicialização do firmware UEFI em sistemas Linux. O ambiente utilizado é o VirtualBox, uma vez que ambientes como o Proxmox utilizam, por padrão, o SeaBIOS, cujo processo de execução difere do padrão UEFI.
+Este laboratório descreve o processo de análise das variáveis de inicialização do firmware UEFI em sistemas Linux. O ambiente utilizado é o VirtualBox, uma vez que a máquina atual que roda o Proxmox é o padrão BIOS, cujo processo de execução difere do padrão UEFI.
 
 
 
