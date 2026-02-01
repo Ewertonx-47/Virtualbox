@@ -1,97 +1,194 @@
-Nesse lab será feito uma analise das entradas do firmware UEFI do sistema Linux. A execução desse trabalho será feito no ambiente do Virtualbox, pois o padrão de firmware da máquina que utiliza o Proxmox é BIOS, no qual tem uma analise e execução diferente.
+Laboratório: Análise de Entradas de Firmware UEFI no Linux
 
-Antes de qualquer coisa, o UEFI ele tem um comportamente diferente da BIOS, enquanto a BIOS faz o processo de POST e busca o MBR nos primeiros 512bytes do primeiro disco da máquina, o UEFI ele faz o post e busca as informações na NVRAM (memória não volátil) que está atrelado na placa mãe. A partir desso ponto, o UEFI segue o caminho que foi visualizado na memória. 
 
-Com um comando, conseguimos visualizar e lê as variáveis armazenadas na NVRAM.
 
-* efibootmgr
+Este laboratório descreve o processo de análise das variáveis de inicialização do firmware UEFI em sistemas Linux. O ambiente utilizado é o VirtualBox, uma vez que ambientes como o Proxmox utilizam, por padrão, o SeaBIOS, cujo processo de execução difere do padrão UEFI.
 
-(imagem)
 
-Na imagem, podemos identificar as seguintes situações:
 
--BootCurrent: 003 - Qual entrada atual que foi utilizada.
--Timeout: 0 seconds - É o tempo que o menu da BIOS/UEFI espera antes de carregar a opção padrão.
--BooOrder: 003,000,001 - Esta é a hierarquia de boot. O computador tenta primeiro a 0003 (Ubuntu). Se ela falhar, tenta a 0000 e assim por diante.
--* (estrela) - Entrada ativa.
+1\. Conceitos Fundamentais: UEFI vs. BIOS
 
-Por exemplo o 0003 que possui as seguintes informações:
+Diferente do legado BIOS, que executa o processo de POST e busca o registro de inicialização no MBR (primeiros 512 bytes do disco), o UEFI realiza o POST e consulta as variáveis armazenadas na NVRAM (memória não volátil) da placa-mãe. A partir dessas informações, o firmware localiza o caminho do carregador de inicialização.
 
-"Ubuntu HD(1,GPT,b275e370...)/File(\EFI\ubuntu\shimx64.efi)"
 
-HD(1,GPT,...): O UEFI identifica que deve olhar para a primeira partição de um disco com tabela de partição GPT. Aquele código longo é o UUID da partição ESP.
 
-File(\EFI\ubuntu\shimx64.efi): Aqui está o "mapa" que o firmware segue.
+Para visualizar as variáveis armazenadas na NVRAM, utiliza-se o comando: efibootmgr
 
-Caso essa entrada não funcione, o firmware tentará a segunda opção e assim por diante. 
 
-Utilizando um comando para listar as partições e discos que foram identificados pelos sistema operacional, podemos visualizar como está a divisão e formatação das partições.
 
-* lsblk -f
+!\[lsblk](../Assets/UEFI/efibootmgr.png)
 
-(imagem)
 
-Na imagem podemos observar que a partição sda1 ela tem uma formatação diferente da sda2. em sda1 temos FAT32 e em sda2 temos EXT4. A ESP é formatada em FAT32 por ser um requisito da especificação técnica UEFI. Como a ESP é lida pelo firmware antes do sistema operacional carregar, ela precisa de um sistema de arquivos simples e amplamente suportado que não exija drivers complexos (como NTFS ou EXT4). Pode-se perceber também que a partição está montada em boot/efi, que é o caminho que a NVRAM armazena para que a UEFI possa ver na hora de bootar. 
 
-O que é /dev/sda1 nesse cenário?
+2\. Análise da Saída efibootmgr
 
--Ela NÃO contém kernel
--Ela NÃO contém /etc
--Ela NÃO é /boot
--Ela contém executáveis UEFI.
 
-Agora, olhando dentro da partição ESP, sem mexer em nada, podemos visualizar os seguintes aquivos:
 
-* ls -R /boot/efi
+Com base na execução do comando, identificamos os seguintes parâmetros:
 
-(imagem)
 
-No path /boot/efi/EFI/ubuntu temos os arquivos .efi:
 
--grubx64.efi 
--shimx64.efi 
+BootCurrent: Indica a entrada de boot utilizada na sessão atual.
 
-Esses são os executaveis que a UEFI procura para executar. Primeiro o UEFI executa shimx64.efi que é um arquivo de segurança para validar se o próximo executável de fato é o grubx64.efi. Nada mais que uma camada de segurança.
 
-Mas sobre o kernel? Porque o firmware faz o caminho de /boot, mas não carrega o kernel?
 
-O firmware UEFI é simples. Ele consegue ler a partição formatada em FAT32 e executar o arquivo.efi, mas ele não sabe que o seu Ubuntu está em uma partição ext4 logo ao lado. Após o grubx64.efi ser carregado na memória RAM, ele não sabe onde está os arquivos configuração, pois o grubx64.efi é a código base do GRUB mais um arquivo de configuração temporário chamado Early Config. A partir daí, o executável consegue localizar os arquivos de configuração em /boot e chama o GRUB que nos mostra o menu de entrada.
+Timeout: Tempo de espera (em segundos) do menu de firmware antes de carregar a opção padrão.
 
-Agora, vamos criar uma nova entrada que ficará armazenda na NVRAM para que o firmware possa seguir uma nova ordem, se necessário ou só ter um outro caminho a seguir caso o primeiro de errado. 
 
-Já vimos no comando "efibootmgr" a saída que está sendo utilizada. 
 
-Criando uma nova entrada UEFI, sem substituir a atual.
+BootOrder: Define a hierarquia de inicialização (ex: 0003, 0000, 0001). O sistema tenta iniciar a primeira opção; em caso de falha, segue para a próxima.
 
-* sudo efibootmgr -c \ - Create
-* -d /dev/sda \ - Disco
-* -p 1 \ - Partição ESP
-* -L "Linux-LAB" \ - Nome visível
-* -l '\EFI\ubuntu\grubx64.efi' - Caminho EFI
-* efibootmgr - Conferir a nova entrada
 
-(imagem)
 
-Após o reboot, o Linux já registrou um comportamente diferente na entrada do firmware. 
+Asterisco (\*): Indica que a entrada está ativa.
 
-(imagem)
 
-Anteriormente o BootCurrent era o 0003, com o reboot da máquina passou a ser o 0002 (recém criada).
 
-Testando outro tipo de entrada forçadamente.
+Exemplo da entrada 0003 (Ubuntu): "Ubuntu HD(1,GPT,b275e370...)/File(\\EFI\\ubuntu\\shimx64.efi)"
+
+
+
+HD(1,GPT,...): O firmware identifica a primeira partição de um disco com tabela GPT. O código alfanumérico representa o UUID da partição ESP.
+
+
+
+File(\\EFI\\ubuntu\\shimx64.efi): O caminho absoluto dentro da partição para o executável do firmware.
+
+
+
+3\. Verificação de Partições e Sistema de Arquivos
+
+Utilizamos o comando abaixo para visualizar a estrutura de blocos e sistemas de arquivos: lsblk -f
+
+
+
+!\[lsblk](../Assets/UEFI/lsblk-f.png)
+
+
+
+Observa-se que a partição /dev/sda1 (ESP) utiliza o formato FAT32, enquanto /dev/sda2 utiliza EXT4.
+
+
+
+Nota Técnica: A partição ESP (EFI System Partition) deve ser obrigatoriamente FAT32, conforme as especificações UEFI. Isso ocorre porque o firmware precisa ler esta partição antes do carregamento do sistema operacional, exigindo um sistema de arquivos simples que dispense drivers complexos.
+
+
+
+A partição ESP é montada em /boot/efi. É importante destacar que esta partição:
+
+
+
+NÃO contém o Kernel.
+
+
+
+NÃO contém o diretório /etc.
+
+
+
+NÃO é o diretório /boot.
+
+
+
+Contém apenas os executáveis UEFI.
+
+
+
+4\. Estrutura de Arquivos na Partição ESP
+
+Listando o conteúdo de forma recursiva: ls -R /boot/efi
+
+
+
+!\[lsblk](../Assets/UEFI/ls-R.png)
+
+
+
+No caminho /boot/efi/EFI/ubuntu, encontramos os arquivos:
+
+
+
+shimx64.efi: Responsável pela segurança (Secure Boot), validando o próximo binário.
+
+
+
+grubx64.efi: O carregador de inicialização propriamente dito.
+
+
+
+O firmware UEFI lê a partição FAT32 e executa o .efi. Contudo, ele não possui suporte nativo para ler a partição EXT4 onde está o Ubuntu. O grubx64.efi é carregado na RAM, utiliza um arquivo de configuração temporário (Early Config) para localizar a partição raiz e, então, carrega o menu completo do GRUB e o Kernel.
+
+
+
+5\. Manipulação de Entradas na NVRAM
+
+Para criar uma nova entrada na NVRAM sem substituir a atual, utilizamos:
+
+
+
+sudo efibootmgr -c -d /dev/sda -p 1 -L "Linux-LAB" -l '\\EFI\\ubuntu\\grubx64.efi'
+
+
+
+Parâmetros:
+
+
+
+-c: Create (Criar).
+
+
+
+-d: Disco de destino.
+
+
+
+-p: Número da partição ESP.
+
+
+
+-L: Label (Nome de exibição).
+
+
+
+-l: Path do carregador EFI.
+
+
+
+!\[lsblk](../Assets/UEFI/created\_entry.png)
+
+
+
+Após a criação, validamos com efibootmgr. Ao reiniciar, o sistema assumirá a nova entrada conforme a ordem de prioridade definida.
+
+
+
+6\. Alteração da Ordem de Inicialização (Boot Order)
+
+Para forçar uma nova hierarquia de boot manualmente:
+
+
+
+
 
 sudo efibootmgr -o 0003,0002,0001,0000
 
-(imagem)
 
-Antes do reboot já é possível perceber a mudança no BootOrder. 
 
-(imagem)
+A alteração no BootOrder é refletida imediatamente na saída do comando e será aplicada no próximo ciclo de inicialização do hardware.
 
-Após o reboot, a entrada passou a ser 0003 primeiro.
 
-(imagem)
 
- 
+Antes do reboot
 
+
+
+!\[lsblk](../Assets/UEFI/before\_reboot.png)
+
+
+
+Após o reboot 
+
+
+
+!\[lsblk](../Assets/UEFI/after\_reboot.png)
 
