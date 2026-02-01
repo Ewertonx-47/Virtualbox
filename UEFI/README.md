@@ -6,7 +6,7 @@ Este laboratório descreve o processo de análise das variáveis de inicializaç
 
 
 
-1\. Conceitos Fundamentais: UEFI vs. BIOS
+1. Conceitos Fundamentais: UEFI vs. BIOS
 
 Diferente do legado BIOS, que executa o processo de POST e busca o registro de inicialização no MBR (primeiros 512 bytes do disco), o UEFI realiza o POST e consulta as variáveis armazenadas na NVRAM (memória não volátil) da placa-mãe. A partir dessas informações, o firmware localiza o caminho do carregador de inicialização.
 
@@ -16,11 +16,11 @@ Para visualizar as variáveis armazenadas na NVRAM, utiliza-se o comando: efiboo
 
 
 
-!\[lsblk](../Assets/UEFI/efibootmgr.png)
+![lsblk](../Assets/UEFI/efibootmgr.png)
 
 
 
-2\. Análise da Saída efibootmgr
+2. Análise da Saída efibootmgr
 
 
 
@@ -62,7 +62,7 @@ Utilizamos o comando abaixo para visualizar a estrutura de blocos e sistemas de 
 
 
 
-!\[lsblk](../Assets/UEFI/lsblk-f.png)
+![lsblk](../Assets/UEFI/lsblk-f.png)
 
 
 
@@ -94,13 +94,13 @@ Contém apenas os executáveis UEFI.
 
 
 
-4\. Estrutura de Arquivos na Partição ESP
+4. Estrutura de Arquivos na Partição ESP
 
 Listando o conteúdo de forma recursiva: ls -R /boot/efi
 
 
 
-!\[lsblk](../Assets/UEFI/ls-R.png)
+![lsblk](../Assets/UEFI/ls-R.png)
 
 
 
@@ -120,7 +120,7 @@ O firmware UEFI lê a partição FAT32 e executa o .efi. Contudo, ele não possu
 
 
 
-5\. Manipulação de Entradas na NVRAM
+5. Manipulação de Entradas na NVRAM
 
 Para criar uma nova entrada na NVRAM sem substituir a atual, utilizamos:
 
@@ -154,7 +154,7 @@ Parâmetros:
 
 
 
-!\[lsblk](../Assets/UEFI/created\_entry.png)
+![lsblk](../Assets/UEFI/created\_entry.png)
 
 
 
@@ -162,7 +162,7 @@ Após a criação, validamos com efibootmgr. Ao reiniciar, o sistema assumirá a
 
 
 
-6\. Alteração da Ordem de Inicialização (Boot Order)
+6. Alteração da Ordem de Inicialização (Boot Order)
 
 Para forçar uma nova hierarquia de boot manualmente:
 
@@ -182,7 +182,7 @@ Antes do reboot
 
 
 
-!\[lsblk](../Assets/UEFI/before\_reboot.png)
+![lsblk](../Assets/UEFI/before\_reboot.png)
 
 
 
@@ -190,5 +190,5 @@ Após o reboot
 
 
 
-!\[lsblk](../Assets/UEFI/after\_reboot.png)
+![lsblk](../Assets/UEFI/after\_reboot.png)
 
