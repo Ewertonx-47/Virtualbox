@@ -56,7 +56,7 @@ File(\\EFI\\ubuntu\\shimx64.efi): O caminho absoluto dentro da partição para o
 
 
 
-3\. Verificação de Partições e Sistema de Arquivos
+ 3. Verificação de Partições e Sistema de Arquivos
 
 Utilizamos o comando abaixo para visualizar a estrutura de blocos e sistemas de arquivos: lsblk -f
 
@@ -94,7 +94,7 @@ Contém apenas os executáveis UEFI.
 
 
 
-4. Estrutura de Arquivos na Partição ESP
+ 4. Estrutura de Arquivos na Partição ESP
 
 Listando o conteúdo de forma recursiva: ls -R /boot/efi
 
@@ -120,7 +120,7 @@ O firmware UEFI lê a partição FAT32 e executa o .efi. Contudo, ele não possu
 
 
 
-5. Manipulação de Entradas na NVRAM
+ 5. Manipulação de Entradas na NVRAM
 
 Para criar uma nova entrada na NVRAM sem substituir a atual, utilizamos:
 
