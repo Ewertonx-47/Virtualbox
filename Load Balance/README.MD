@@ -9,7 +9,7 @@ Além disso, haverá uma VM cliente responsável pelos testes de acesso e valida
 
 Máquinas Virtuais Utilizadas: 
 
-Descrição:
+Descrição: 
 
 --Servidor Apache 1: Ubuntu 192.168.100.50 - Site principal
 
