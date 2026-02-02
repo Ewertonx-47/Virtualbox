@@ -10,7 +10,7 @@ Antes de qualquer configuração, é importante verificar como está a organiza�
 
 
 -> Conforme a imagem, o sda possui três partições:
-
+ 
 sda1 - partição de reserva do sistema.
 
 sda2 (1.8G) - montada em /boot, contendo os arquivos essenciais para inicialização do SO.
