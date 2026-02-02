@@ -10,7 +10,7 @@ Mas mesmo a interface obtendo IP, o mapeamento continuou indisponível. O erro q
 
 -net use: Vai listar todas as conexões SMB ativas.
 
-A princípio a conexão estava desativada.
+A princípio a conexão estava desativada. 
 
 -net use * /delete: Desconecte a sessão antiga
 
