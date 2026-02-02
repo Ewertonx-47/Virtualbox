@@ -12,7 +12,9 @@ Diferente do legado BIOS, que executa o processo de POST e busca o registro de i
 
 
 
-Para visualizar as variáveis armazenadas na NVRAM, utiliza-se o comando: efibootmgr
+Para visualizar as variáveis armazenadas na NVRAM, utiliza-se o comando: 
+
+* efibootmgr
 
 
 
