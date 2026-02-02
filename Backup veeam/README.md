@@ -13,7 +13,7 @@ Como anteriormente já havia sido criado um job referente ao backup completo do 
 ![jobdelete](../Assets/Utilitarios/job_delete.png)
 
 -sudo veeam   # Criar um novo job
-
+ 
 ![summary](../Assets/Backup_veeam/summary_veeam.png)
 
 Ao executar o comando sudo veeam, é aberta uma interface na qual devem ser inseridas as informações do job que está sendo criado. Neste homelab, o nome definido para o backup será job_teste, o destino será o repositório padrão (Veeam Backup & Replication do Windows) e o escopo do backup será a partição sd3, conforme informado anteriormente.
