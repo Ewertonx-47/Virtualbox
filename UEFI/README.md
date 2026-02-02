@@ -58,7 +58,9 @@ File(\\EFI\\ubuntu\\shimx64.efi): O caminho absoluto dentro da partição para o
 
  3. Verificação de Partições e Sistema de Arquivos
 
-Utilizamos o comando abaixo para visualizar a estrutura de blocos e sistemas de arquivos: lsblk -f
+Utilizamos o comando abaixo para visualizar a estrutura de blocos e sistemas de arquivos: 
+
+* lsblk -f
 
 
 
@@ -96,12 +98,11 @@ Contém apenas os executáveis UEFI.
 
  4. Estrutura de Arquivos na Partição ESP
 
-Listando o conteúdo de forma recursiva: ls -R /boot/efi
+Listando o conteúdo de forma recursiva: 
 
-
+* ls -R /boot/efi
 
 ![lsblk](../Assets/UEFI/ls-R.png)
-
 
 
 No caminho /boot/efi/EFI/ubuntu, encontramos os arquivos:
@@ -126,7 +127,11 @@ Para criar uma nova entrada na NVRAM sem substituir a atual, utilizamos:
 
 
 
-sudo efibootmgr -c -d /dev/sda -p 1 -L "Linux-LAB" -l '\\EFI\\ubuntu\\grubx64.efi'
+* sudo efibootmgr -c 
+* -d /dev/sda
+* -p 1
+* -L "Linux-LAB"
+* -l '\\EFI\\ubuntu\\grubx64.efi'
 
 
 
@@ -162,15 +167,12 @@ Após a criação, validamos com efibootmgr. Ao reiniciar, o sistema assumirá a
 
 
 
-6. Alteração da Ordem de Inicialização (Boot Order)
+ 6. Alteração da Ordem de Inicialização (Boot Order)
 
 Para forçar uma nova hierarquia de boot manualmente:
 
 
-
-
-
-sudo efibootmgr -o 0003,0002,0001,0000
+* sudo efibootmgr -o 0003,0002,0001,0000
 
 
 
